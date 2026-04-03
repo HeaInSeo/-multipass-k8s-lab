@@ -8,3 +8,5 @@ tofu.tfstate.d/
 kubeconfig
 hosts.generated
 *.bak
+__pycache__/
+*.pyc
