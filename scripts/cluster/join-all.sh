@@ -5,7 +5,7 @@ NAME_PREFIX="${NAME_PREFIX:-lab}"
 MASTERS="${MASTERS:-1}"
 WORKERS="${WORKERS:-2}"
 KUBECONFIG_PATH="${KUBECONFIG_PATH:-./kubeconfig}"
-VM_USER="${VM_USER:-rocky}"
+VM_USER="${VM_USER:-ubuntu}"
 VM_HOME="/home/${VM_USER}"
 
 need() {

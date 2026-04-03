@@ -2,7 +2,7 @@
 
 ## Summary
 
-`multipass-k8s-lab` is a general-purpose Kubernetes VM lab baseline. Its job is to make it easy to create, destroy, inspect, and lightly extend a repeatable kubeadm cluster on Multipass-backed Rocky Linux 8 virtual machines.
+`multipass-k8s-lab` is a general-purpose Kubernetes VM lab baseline. Its job is to make it easy to create, destroy, inspect, and lightly extend a repeatable kubeadm cluster on Multipass-backed Ubuntu 24.04 virtual machines.
 
 The repository exists to support many future K8s PoCs, not to encode one PoC's workload or business logic.
 
@@ -10,7 +10,7 @@ The repository exists to support many future K8s PoCs, not to encode one PoC's w
 
 - Provide a reusable local K8s VM lab foundation
 - Keep cluster lifecycle repeatable and scriptable
-- Start from a clear baseline: Rocky 8 + Multipass + OpenTofu + kubeadm
+- Start from a clear baseline: Ubuntu 24.04 guests + Multipass + OpenTofu + kubeadm
 - Support a first practical lab shape: 3-node VM cluster
 - Leave room for optional infra capabilities such as load balancer, local storage, and future networking variants
 

@@ -9,9 +9,9 @@ variable "name_prefix" {
 }
 
 variable "multipass_image" {
-  description = "Multipass image name for the baseline Rocky Linux 8 guest"
+  description = "Multipass image name for the baseline guest image"
   type        = string
-  default     = "rocky-8"
+  default     = "24.04"
 }
 
 variable "masters" {
@@ -109,7 +109,7 @@ variable "recreate_on_diff" {
 variable "vm_user" {
   description = "Default guest user"
   type        = string
-  default     = "rocky"
+  default     = "ubuntu"
   validation {
     condition     = can(regex("^[a-z_][a-z0-9_-]*$", var.vm_user))
     error_message = "vm_user must be a valid Linux username."

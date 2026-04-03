@@ -2,11 +2,11 @@
 package_update: true
 package_upgrade: true
 packages:
-  - dnf-plugins-core
   - ca-certificates
   - curl
-  - gnupg2
-  - iproute-tc
+  - gpg
+  - apt-transport-https
+  - iproute2
   - socat
   - conntrack
   - ebtables
@@ -29,30 +29,22 @@ write_files:
       fs.inotify.max_user_watches = 524288
       vm.swappiness = 0
 
-  - path: /etc/yum.repos.d/kubernetes.repo
-    content: |
-      [kubernetes]
-      name=Kubernetes
-      baseurl=https://pkgs.k8s.io/core:/stable:/v1.32/rpm/
-      enabled=1
-      gpgcheck=1
-      gpgkey=https://pkgs.k8s.io/core:/stable:/v1.32/rpm/repodata/repomd.xml.key
-      exclude=kubelet kubeadm kubectl
-
 runcmd:
   - swapoff -a
   - sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
   - systemctl list-units --type=swap --all --no-legend | awk '{print $1}' | xargs -r systemctl mask --now
-  - setenforce 0 || true
-  - sed -i 's/^SELINUX=enforcing/SELINUX=permissive/' /etc/selinux/config
   - modprobe overlay
   - modprobe br_netfilter
   - sysctl --system
-  - dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-  - dnf -y install containerd.io
+  - mkdir -p /etc/apt/keyrings
+  - sh -c 'curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg'
+  - chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  - sh -c 'echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /" > /etc/apt/sources.list.d/kubernetes.list'
+  - apt-get update
+  - apt-get install -y containerd kubelet kubeadm kubectl
+  - apt-mark hold kubelet kubeadm kubectl
   - mkdir -p /etc/containerd
   - containerd config default > /etc/containerd/config.toml
   - sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
   - systemctl enable --now containerd
-  - dnf -y install kubelet kubeadm kubectl --disableexcludes=kubernetes
   - systemctl enable --now kubelet

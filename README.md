@@ -1,13 +1,13 @@
 # multipass-k8s-lab
 
-`multipass-k8s-lab` is a reusable VM-based Kubernetes lab baseline for local and workstation-grade PoC work. The current baseline is intentionally narrow: Rocky Linux 8 host + Multipass + OpenTofu + kubeadm, with a repeatable 3-node cluster flow and a small set of infrastructure add-ons.
+`multipass-k8s-lab` is a reusable VM-based Kubernetes lab baseline for local and workstation-grade PoC work. The current baseline is intentionally narrow: Multipass + Ubuntu 24.04 guests + OpenTofu + kubeadm, with a repeatable 3-node cluster flow and a small set of infrastructure add-ons.
 
 This repository is not a single-project environment. It is a shared lab infrastructure base for future Kubernetes experiments such as node-local artifact and storage flows, DaemonSet-style node agents, same-node reuse versus cross-node fetch behavior, Cilium and networking work, storage tests, operator validation, and other cluster-level PoCs.
 
 ## Identity
 
 - Purpose: general-purpose K8s VM lab infrastructure
-- Current baseline: Rocky Linux 8 + Multipass + OpenTofu + kubeadm
+- Current baseline: Ubuntu 24.04 guests + Multipass + OpenTofu + kubeadm
 - First target shape: 3 VMs, `1 control-plane + 2 workers`
 - Lifecycle support: host setup, cluster up/down, status, local clean
 - Add-on model: `base` and `optional`
@@ -100,7 +100,7 @@ Installs or verifies:
 What happens:
 
 - OpenTofu initializes and applies local resources
-- Multipass launches Rocky 8 VMs
+- Multipass launches Ubuntu 24.04 VMs
 - `kubeadm init` runs on the first control-plane node
 - worker nodes join
 - local `./kubeconfig` is exported
@@ -196,4 +196,5 @@ This repo references the earlier project but does not inherit its service-orient
 
 - The default CNI in the first baseline is Flannel for simplicity and quick bootstrap.
 - Cilium is intentionally deferred as a future profile or optional path, not forced into the baseline.
-- Rocky Linux 8 is the current supported baseline for both host assumptions and guest image choice.
+- The guest baseline uses Ubuntu 24.04 because the public Multipass image catalog is Ubuntu-first in the current environment.
+- Host helper scripts are still oriented around the existing Rocky 8 workstation setup flow.

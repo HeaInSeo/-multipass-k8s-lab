@@ -3,7 +3,7 @@ set -euo pipefail
 
 vm="${1:?vm required}"
 local_script="${2:?local script required}"
-VM_USER="${VM_USER:-rocky}"
+VM_USER="${VM_USER:-ubuntu}"
 remote_path="${3:-/home/${VM_USER}/remote.sh}"
 
 if ! command -v multipass >/dev/null 2>&1; then

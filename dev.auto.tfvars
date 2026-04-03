@@ -10,5 +10,5 @@ worker_disk      = "50G"
 kubeconfig_path  = "./kubeconfig"
 recreate_on_diff = true
 
-multipass_image = "rocky-8"
-vm_user         = "rocky"
+multipass_image = "24.04"
+vm_user         = "ubuntu"

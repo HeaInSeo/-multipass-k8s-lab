@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VM_USER="${VM_USER:-rocky}"
+VM_USER="${VM_USER:-ubuntu}"
 VM_HOME="/home/${VM_USER}"
 POD_CIDR="${POD_CIDR:-10.244.0.0/16}"
 
