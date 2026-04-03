@@ -1,0 +1,14 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: lab-default-pool
+  namespace: metallb-system
+spec:
+  addresses:
+    - 192.168.64.240-192.168.64.250
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: lab-default-l2
+  namespace: metallb-system

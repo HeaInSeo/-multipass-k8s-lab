@@ -1,0 +1,58 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+packages:
+  - dnf-plugins-core
+  - ca-certificates
+  - curl
+  - gnupg2
+  - iproute-tc
+  - socat
+  - conntrack
+  - ebtables
+  - ethtool
+  - net-tools
+  - bash-completion
+
+write_files:
+  - path: /etc/modules-load.d/k8s.conf
+    content: |
+      overlay
+      br_netfilter
+
+  - path: /etc/sysctl.d/99-k8s.conf
+    content: |
+      net.bridge.bridge-nf-call-iptables = 1
+      net.bridge.bridge-nf-call-ip6tables = 1
+      net.ipv4.ip_forward = 1
+      fs.inotify.max_user_instances = 8192
+      fs.inotify.max_user_watches = 524288
+      vm.swappiness = 0
+
+  - path: /etc/yum.repos.d/kubernetes.repo
+    content: |
+      [kubernetes]
+      name=Kubernetes
+      baseurl=https://pkgs.k8s.io/core:/stable:/v1.32/rpm/
+      enabled=1
+      gpgcheck=1
+      gpgkey=https://pkgs.k8s.io/core:/stable:/v1.32/rpm/repodata/repomd.xml.key
+      exclude=kubelet kubeadm kubectl
+
+runcmd:
+  - swapoff -a
+  - sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
+  - systemctl list-units --type=swap --all --no-legend | awk '{print $1}' | xargs -r systemctl mask --now
+  - setenforce 0 || true
+  - sed -i 's/^SELINUX=enforcing/SELINUX=permissive/' /etc/selinux/config
+  - modprobe overlay
+  - modprobe br_netfilter
+  - sysctl --system
+  - dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  - dnf -y install containerd.io
+  - mkdir -p /etc/containerd
+  - containerd config default > /etc/containerd/config.toml
+  - sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
+  - systemctl enable --now containerd
+  - dnf -y install kubelet kubeadm kubectl --disableexcludes=kubernetes
+  - systemctl enable --now kubelet
