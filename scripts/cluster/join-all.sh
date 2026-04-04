@@ -50,7 +50,7 @@ if [[ "${WORKERS}" -gt 0 ]]; then
       if [[ -f /etc/kubernetes/kubelet.conf ]]; then \
         echo '[INFO] already joined; skip'; \
       else \
-        chmod +x ${VM_HOME}/join.sh && sudo bash ${VM_HOME}/join.sh; \
+        sudo chmod +x ${VM_HOME}/join.sh && sudo bash ${VM_HOME}/join.sh; \
       fi"
   done
 fi
