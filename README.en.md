@@ -1,7 +1,7 @@
 # multipass-k8s-lab
 
-English: [README.en.md](/opt/go/src/github.com/HeaInSeo/multipass-k8s-lab/README.en.md)
-한국어: [README.md](/opt/go/src/github.com/HeaInSeo/multipass-k8s-lab/README.md)
+English: [README.en.md](README.en.md)
+한국어: [README.md](README.md)
 
 `multipass-k8s-lab` is a reusable VM-based Kubernetes lab baseline for local and workstation-grade PoC work. The current baseline is intentionally narrow: Multipass + Ubuntu 24.04 guests + OpenTofu + kubeadm, with a repeatable 3-node cluster flow and a small set of infrastructure add-ons.
 
@@ -31,7 +31,7 @@ This repository is not a single-project environment. It is a shared lab infrastr
 - Production cluster provisioning or production hardening
 - Deeply embedded project-specific workloads in the main repo
 
-More detail: [docs/LAB_SCOPE.md](/opt/go/src/github.com/HeaInSeo/multipass-k8s-lab/docs/LAB_SCOPE.md)
+More detail: [docs/LAB_SCOPE.md](docs/LAB_SCOPE.md)
 
 ## Quick Start
 
@@ -158,7 +158,7 @@ Examples:
 ./scripts/k8s-tool.sh addons-verify
 ```
 
-`metallb` requires review of [addons/values/metallb/ipaddresspool.yaml](/opt/go/src/github.com/HeaInSeo/multipass-k8s-lab/addons/values/metallb/ipaddresspool.yaml) before use.
+`metallb` requires review of [addons/values/metallb/ipaddresspool.yaml](addons/values/metallb/ipaddresspool.yaml) before use.
 
 ## Directory Layout
 
