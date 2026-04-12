@@ -1,0 +1,31 @@
+---
+# Cilium Gateway — HTTPRoute(Harbor) + GRPCRoute(NodeForge) 공용 진입점
+#
+# Cilium kube-proxy-replacement + Gateway API 설정 이후 적용한다.
+# Cilium Helm 설치 시 kubeProxyReplacement=true 가 필요하다.
+#
+# 설치 순서:
+#   1. Gateway API CRDs v1.3.0 설치 (scripts/host/setup-host-rocky8.sh)
+#   2. Cilium Helm upgrade --set kubeProxyReplacement=true
+#   3. kubectl apply -f k8s/gateway/01-gateway.yaml
+#   4. kubectl apply -f k8s/harbor/   (HTTPRoute)
+#   5. kubectl apply -f k8s/nodeforge/ (GRPCRoute)
+#
+# LB IP 확인:
+#   kubectl get gateway cilium-gateway -n nodeforge-system
+#   → EXTERNAL-IP: 10.113.24.96  (Cilium L2 LB Pool 할당)
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: cilium-gateway
+  namespace: nodeforge-system
+spec:
+  gatewayClassName: cilium
+  listeners:
+    # HTTP 리스너 — HTTPRoute(Harbor) + GRPCRoute(NodeForge h2c) 공용
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: All

@@ -1,0 +1,47 @@
+---
+# Harbor HTTPRoute — Cilium Gateway를 통해 Harbor 웹 UI + API 노출
+#
+# 전제 조건:
+#   - Harbor Helm 설치 (harbor 네임스페이스)
+#   - Gateway k8s/gateway/01-gateway.yaml 적용 완료
+#   - Harbor externalURL: http://harbor.10.113.24.96.nip.io
+#
+# Harbor Helm values 핵심 설정:
+#   externalURL: http://harbor.10.113.24.96.nip.io
+#   expose.type: clusterIP
+#   expose.clusterIP.name: harbor
+#
+# seoy 호스트에서 접근하려면 LB IP 라우팅이 필요하다:
+#   sudo ip route replace 10.113.24.96/32 dev mpqemubr0
+#   sudo arp -s 10.113.24.96 <harbor-nginx-pod-mac>
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: harbor
+  namespace: harbor
+spec:
+  parentRefs:
+    - name: cilium-gateway
+      namespace: nodeforge-system
+  hostnames:
+    - "harbor.10.113.24.96.nip.io"
+  rules:
+    - backendRefs:
+        - name: harbor
+          port: 80
+---
+# ReferenceGrant: nodeforge-system 네임스페이스의 Gateway가
+# harbor 네임스페이스의 Service를 backendRef로 참조할 수 있도록 허용
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: harbor-from-gateway
+  namespace: harbor
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: harbor
+  to:
+    - group: ""
+      kind: Service
