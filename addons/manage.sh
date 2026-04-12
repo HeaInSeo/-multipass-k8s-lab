@@ -17,6 +17,7 @@ Examples:
   addons/manage.sh install base
   addons/manage.sh install optional local-path-storage
   addons/manage.sh install optional metallb
+  addons/manage.sh install optional cilium
 USAGE
 }
 
@@ -47,6 +48,9 @@ install_optional() {
     metallb)
       bash "${ROOT_DIR}/addons/optional/metallb/install.sh"
       ;;
+    cilium)
+      bash "${ROOT_DIR}/addons/optional/cilium/install.sh"
+      ;;
     *)
       echo "unknown optional addon: $1" >&2
       exit 1
@@ -62,6 +66,9 @@ uninstall_optional() {
     metallb)
       bash "${ROOT_DIR}/addons/optional/metallb/uninstall.sh"
       ;;
+    cilium)
+      bash "${ROOT_DIR}/addons/optional/cilium/uninstall.sh"
+      ;;
     *)
       echo "unknown optional addon: $1" >&2
       exit 1
@@ -72,6 +79,7 @@ uninstall_optional() {
 verify_optional() {
   bash "${ROOT_DIR}/addons/optional/local-path-storage/verify.sh"
   bash "${ROOT_DIR}/addons/optional/metallb/verify.sh"
+  bash "${ROOT_DIR}/addons/optional/cilium/verify.sh"
 }
 
 case "$ACTION" in
