@@ -110,7 +110,7 @@ if multipass info "$name" >/dev/null 2>&1; then
 fi
 
 echo "[INFO] launching $name"
-multipass launch "$image" \
+multipass launch --timeout 1800 "$image" \
   --name "$name" \
   --memory "$mem" \
   --disk "$disk" \
