@@ -83,6 +83,8 @@ When the libvirt backend uses `qemu:///system`, the command may need `sudo` unle
 
 `up` now installs the base add-on `metrics-server` by default. `addons-verify` now expects the base add-ons to actually exist. To target one optional add-on explicitly, use a scoped command such as `./scripts/k8s-tool.sh addons-verify optional cilium`.
 
+Because of the current kubelet certificate shape in this lab baseline, the `metrics-server` install path applies `--kubelet-insecure-tls`.
+
 6. Tear down:
 
 ```bash

@@ -49,6 +49,7 @@ HOST_PROFILE=hosts/remote-lab.env ./scripts/k8s-tool.sh up
 ```
 
 이 경로는 이제 클러스터 bootstrap 뒤에 기본 base 애드온 세트도 자동 설치합니다. 현재 기준으로는 `metrics-server`가 여기에 포함됩니다.
+현재 kubelet 인증서 제약 때문에 `metrics-server`는 `--kubelet-insecure-tls` 설정을 포함해 설치됩니다.
 
 원격 libvirt 랩 생성:
 

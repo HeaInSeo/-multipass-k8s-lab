@@ -49,6 +49,7 @@ HOST_PROFILE=hosts/remote-lab.env ./scripts/k8s-tool.sh up
 ```
 
 This path now installs the default base add-on set automatically after cluster bootstrap. At the moment, that means `metrics-server`.
+Because of the current kubelet certificate constraints in this lab baseline, `metrics-server` is installed with `--kubelet-insecure-tls`.
 
 Bring up the remote libvirt lab:
 
