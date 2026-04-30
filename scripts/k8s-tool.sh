@@ -9,6 +9,7 @@ BACKEND="${BACKEND:-multipass}"
 LAB_HOST_MODE="${LAB_HOST_MODE:-local}"
 LAB_REMOTE_SSH_TARGET="${LAB_REMOTE_SSH_TARGET:-}"
 LAB_REMOTE_REPO_PATH="${LAB_REMOTE_REPO_PATH:-}"
+LAB_REMOTE_SSH_CONFIG="${LAB_REMOTE_SSH_CONFIG:-/dev/null}"
 HOST_PROFILE="${HOST_PROFILE:-}"
 
 if [[ -n "$HOST_PROFILE" ]]; then
@@ -50,6 +51,7 @@ Env:
   LAB_HOST_MODE=local|remote
   LAB_REMOTE_SSH_TARGET=user@host
   LAB_REMOTE_REPO_PATH=/path/to/infra-lab
+  LAB_REMOTE_SSH_CONFIG=/dev/null
   TOOL=tofu|terraform
   KUBECONFIG_PATH=/path/to/kubeconfig
   FORCE=1
@@ -146,7 +148,7 @@ passthrough_env() {
 }
 
 run_remote() {
-  local remote_cmd env_prefix args_quoted
+  local remote_cmd env_prefix args_quoted ssh_opts
 
   [[ -n "$LAB_REMOTE_SSH_TARGET" ]] || {
     echo "LAB_REMOTE_SSH_TARGET is required when LAB_HOST_MODE=remote" >&2
@@ -160,7 +162,14 @@ run_remote() {
   env_prefix="$(passthrough_env)"
   printf -v args_quoted '%q ' "$cmd" "$@"
   remote_cmd="cd $(printf '%q' "$LAB_REMOTE_REPO_PATH") && ${env_prefix}LAB_HOST_MODE=local bash scripts/k8s-tool.sh ${args_quoted}"
-  ssh "$LAB_REMOTE_SSH_TARGET" "$remote_cmd"
+  ssh_opts=(
+    -F "$LAB_REMOTE_SSH_CONFIG"
+    -o StrictHostKeyChecking=no
+    -o UserKnownHostsFile=/dev/null
+    -o BatchMode=yes
+    -o ConnectTimeout=10
+  )
+  ssh "${ssh_opts[@]}" "$LAB_REMOTE_SSH_TARGET" "$remote_cmd"
 }
 
 cmd="${1:-}"

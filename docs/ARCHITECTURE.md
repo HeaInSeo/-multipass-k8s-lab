@@ -27,6 +27,7 @@ Relevant settings:
 - `HOST_PROFILE`
 - `LAB_REMOTE_SSH_TARGET`
 - `LAB_REMOTE_REPO_PATH`
+- `LAB_REMOTE_SSH_CONFIG`
 
 ### Backend model
 
@@ -84,6 +85,5 @@ Current usage:
 
 ## Known gaps
 
-- helper scripts like `scripts/cluster/flannel-to-cilium.sh` are still multipass-oriented
 - backend-specific variables are not fully normalized yet
 - kubeconfig stays on the execution host unless copied separately

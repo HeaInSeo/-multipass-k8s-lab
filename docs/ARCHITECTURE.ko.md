@@ -27,6 +27,7 @@ control host 와 실제 lab host 는 서로 다른 장비일 수 있습니다.
 - `HOST_PROFILE`
 - `LAB_REMOTE_SSH_TARGET`
 - `LAB_REMOTE_REPO_PATH`
+- `LAB_REMOTE_SSH_CONFIG`
 
 ### Backend 모델
 
@@ -84,6 +85,5 @@ runtime transport layer 는 `scripts/runtime/` 아래에 있습니다.
 
 ## 현재 남아 있는 공백
 
-- `scripts/cluster/flannel-to-cilium.sh` 같은 일부 헬퍼는 아직 multipass 중심입니다
 - backend 별 변수 이름이 아직 완전히 정규화되지는 않았습니다
 - kubeconfig 는 별도 복사 작업이 없으면 실행 host 에 남습니다

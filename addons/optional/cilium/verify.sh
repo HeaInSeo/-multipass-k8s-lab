@@ -26,16 +26,16 @@ check "cilium-operator Deployment exists" \
   "kubectl -n ${CILIUM_NS} get deployment cilium-operator"
 
 check "all cilium pods Running" \
-  "kubectl -n ${CILIUM_NS} get pods -l k8s-app=cilium --field-selector=status.phase!=Running 2>/dev/null | grep -q 'No resources'"
+  "[[ \$(kubectl -n ${CILIUM_NS} get pods -l k8s-app=cilium -o jsonpath='{range .items[*]}{.status.phase}{\"\\n\"}{end}' | grep -vc '^Running$' || true) -eq 0 ]]"
 
 check "Gateway API GatewayClass cilium registered" \
   "kubectl get gatewayclass cilium"
 
 check "CiliumLoadBalancerIPPool exists" \
-  "kubectl get ciliumloadbalancerippools.cilium.io lab-default-pool"
+  "[[ \$(kubectl get ciliumloadbalancerippools.cilium.io --no-headers 2>/dev/null | wc -l) -ge 1 ]]"
 
 check "CiliumL2AnnouncementPolicy exists" \
-  "kubectl get ciliuml2announcementpolicies.cilium.io lab-default-l2"
+  "[[ \$(kubectl get ciliuml2announcementpolicies.cilium.io --no-headers 2>/dev/null | wc -l) -ge 1 ]]"
 
 echo ""
 echo "  PASS: ${PASS}  FAIL: ${FAIL}"

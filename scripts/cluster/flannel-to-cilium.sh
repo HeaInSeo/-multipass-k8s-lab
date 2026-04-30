@@ -20,20 +20,43 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# shellcheck disable=SC1091
+. "${ROOT_DIR}/scripts/runtime/lib.sh"
 
 NAME_PREFIX="${NAME_PREFIX:-lab}"
 MASTERS="${MASTERS:-1}"
 WORKERS="${WORKERS:-2}"
 FLANNEL_MANIFEST="${FLANNEL_MANIFEST:-https://raw.githubusercontent.com/flannel-io/flannel/v0.26.0/Documentation/kube-flannel.yml}"
+VM_RUNTIME="${VM_RUNTIME:-multipass}"
+MASTER_ENDPOINTS="${MASTER_ENDPOINTS:-}"
+WORKER_ENDPOINTS="${WORKER_ENDPOINTS:-}"
+
+require_runtime
 
 # ── 노드 목록 구성 ─────────────────────────────────────────────────────────
 NODES=()
-for i in $(seq 0 $((MASTERS - 1))); do
-  NODES+=("${NAME_PREFIX}-master-${i}")
-done
-for i in $(seq 0 $((WORKERS - 1))); do
-  NODES+=("${NAME_PREFIX}-worker-${i}")
-done
+if [[ "$VM_RUNTIME" == "multipass" ]]; then
+  for i in $(seq 0 $((MASTERS - 1))); do
+    NODES+=("${NAME_PREFIX}-master-${i}")
+  done
+  for i in $(seq 0 $((WORKERS - 1))); do
+    NODES+=("${NAME_PREFIX}-worker-${i}")
+  done
+else
+  if [[ -n "$MASTER_ENDPOINTS" ]]; then
+    IFS=',' read -r -a master_nodes <<< "$MASTER_ENDPOINTS"
+    NODES+=("${master_nodes[@]}")
+  fi
+  if [[ -n "$WORKER_ENDPOINTS" ]]; then
+    IFS=',' read -r -a worker_nodes <<< "$WORKER_ENDPOINTS"
+    NODES+=("${worker_nodes[@]}")
+  fi
+fi
+
+if [[ "${#NODES[@]}" -eq 0 ]]; then
+  echo "no nodes resolved for migration" >&2
+  exit 1
+fi
 
 echo "[INFO] 마이그레이션 대상 노드: ${NODES[*]}"
 echo "[INFO] 현재 노드 상태:"
@@ -62,11 +85,11 @@ else
   echo "[INFO] Flannel DaemonSet 미발견 — 건너뜀"
 fi
 
-# ── Step 3: 각 노드에서 CNI 파일 정리 (multipass exec) ────────────────────
+# ── Step 3: 각 노드에서 CNI 파일 정리 ──────────────────────────────────────
 echo "[STEP 3] 각 노드 CNI 파일 정리"
 for node in "${NODES[@]}"; do
   echo "[INFO] ${node}: CNI 파일 정리 중..."
-  multipass exec "${node}" -- sudo bash -c '
+  vm_exec "${node}" "sudo bash -c '
     # flannel CNI 설정 제거
     rm -f /etc/cni/net.d/10-flannel.conflist
     rm -f /etc/cni/net.d/10-flannel.conf
@@ -79,7 +102,7 @@ for node in "${NODES[@]}"; do
     iptables-save 2>/dev/null | grep -v FLANNEL | iptables-restore 2>/dev/null || true
 
     echo "  CNI 정리 완료"
-  '
+  '"
 done
 
 # ── Step 4: Cilium 설치 ────────────────────────────────────────────────────

@@ -22,6 +22,7 @@
 - `LAB_HOST_MODE=remote`
 - `LAB_REMOTE_SSH_TARGET=seoy@100.123.80.48`
 - `LAB_REMOTE_REPO_PATH=/opt/go/src/github.com/HeaInSeo/infra-lab`
+- `LAB_REMOTE_SSH_CONFIG=/dev/null`
 - `BACKEND=multipass`
 
 libvirt 경로를 사용할 때는 명령 호출 시 `BACKEND=libvirt`를 덮어씁니다.

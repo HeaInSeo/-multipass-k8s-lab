@@ -4,9 +4,11 @@ set -euo pipefail
 VM_RUNTIME="${VM_RUNTIME:-multipass}"
 VM_USER="${VM_USER:-ubuntu}"
 SSH_PRIVATE_KEY_PATH="${SSH_PRIVATE_KEY_PATH:-}"
+SSH_CONFIG_FILE="${SSH_CONFIG_FILE:-/dev/null}"
 
 ssh_opts() {
   local opts=(
+    -F "$SSH_CONFIG_FILE"
     -o StrictHostKeyChecking=no
     -o UserKnownHostsFile=/dev/null
     -o BatchMode=yes
